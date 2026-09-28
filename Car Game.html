@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indian Car Driving Game</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #061b2b;
+}
+
+#game {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: #24a148;
+}
+
+/* BLUE SKY */
+#sky {
+  position: absolute;
+  width: 100%;
+  height: 38%;
+  background: linear-gradient(
+    #0077ff,
+    #00bfff,
+    #7ee8fa
+  );
+}
+
+/* GREEN GRASS */
+#grass {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 70%;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      #159447 0px,
+      #159447 30px,
+      #1fbd58 31px,
+      #1fbd58 60px
+    );
+}
+
+/* ROAD */
+#road {
+  position: absolute;
+  left: 18%;
+  width: 64%;
+  height: 100%;
+  background: #30343b;
+  border-left: 12px solid #eeeeee;
+  border-right: 12px solid #eeeeee;
+}
+
+/* ROAD LINES */
+.line {
+  position: absolute;
+  width: 8px;
+  height: 100px;
+  background: #ffffff;
+  animation: roadMove .5s linear infinite;
+}
+
+.line1 {
+  left: 33%;
+}
+
+.line2 {
+  left: 66%;
+}
+
+@keyframes roadMove {
+  from {
+    transform: translateY(-120px);
+  }
+  to {
+    transform: translateY(100vh);
+  }
+}
+
+/* HUD */
+#hud {
+  position: absolute;
+  z-index: 20;
+  top: 15px;
+  left: 15px;
+  color: white;
+  background: #0066cc;
+  border: 3px solid #19e66b;
+  padding: 12px 18px;
+  border-radius: 15px;
+  font-weight: bold;
+  box-shadow: 0 0 15px #00ff66;
+}
+
+/* PLAYER CAR */
+#car {
+  position: absolute;
+  z-index: 10;
+  width: 62px;
+  height: 105px;
+  bottom: 80px;
+  left: calc(50% - 31px);
+  background: linear-gradient(
+    90deg,
+    #0066ff,
+    #00c6ff,
+    #0066ff
+  );
+  border: 3px solid #00ff66;
+  border-radius: 16px;
+  box-shadow:
+    0 0 15px #00ff66,
+    0 6px 15px #000;
+}
+
+/* CAR WINDOW */
+#car::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 9px;
+  width: 38px;
+  height: 30px;
+  background: #06243d;
+  border: 2px solid #7ee8fa;
+  border-radius: 8px;
+}
+
+/* NUMBER PLATE */
+#car::after {
+  content: "IND";
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  width: 34px;
+  height: 17px;
+  background: white;
+  color: #0066cc;
+  text-align: center;
+  font-size: 11px;
+  font-weight: bold;
+  padding-top: 2px;
+  border-radius: 3px;
+}
+
+/* TRAFFIC */
+.traffic {
+  position: absolute;
+  z-index: 5;
+  width: 55px;
+  height: 90px;
+  background: #19b957;
+  border: 3px solid #0066ff;
+  border-radius: 14px;
+  box-shadow: 0 0 10px #19e66b;
+}
+
+.traffic::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 8px;
+  width: 34px;
+  height: 25px;
+  background: #082238;
+  border-radius: 7px;
+}
+
+/* START BUTTON */
+#start {
+  position: absolute;
+  z-index: 50;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 190px;
+  height: 65px;
+
+  background: linear-gradient(
+    90deg,
+    #0066ff,
+    #00c853
+  );
+
+  border: 3px solid #7cffb2;
+  border-radius: 18px;
+
+  color: white;
+  font-size: 21px;
+  font-weight: bold;
+
+  box-shadow:
+    0 0 20px #00ff66,
+    0 0 20px #008cff;
+}
+
+/* CONTROLS */
+.controls {
+  position: absolute;
+  z-index: 30;
+  bottom: 15px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 25px;
+}
+
+.control {
+  width: 75px;
+  height: 60px;
+
+  border: 3px solid #00ff66;
+  border-radius: 18px;
+
+  background: #0066cc;
+  color: white;
+
+  font-size: 28px;
+  font-weight: bold;
+
+  box-shadow: 0 0 15px #00ff66;
+}
+
+.control:active {
+  background: #00c853;
+  transform: scale(.92);
+}
+
+/* GAME OVER */
+#gameOver {
+  display: none;
+  position: absolute;
+  z-index: 60;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,20,30,.88);
+  color: white;
+  text-align: center;
+  padding-top: 35vh;
+}
+
+#gameOver h1 {
+  color: #00ff66;
+  font-size: 45px;
+  text-shadow: 0 0 15px #00ff66;
+}
+
+#restart {
+  margin-top: 20px;
+  width: 160px;
+  height: 55px;
+  border: 3px solid #00ff66;
+  border-radius: 15px;
+  background: #0066ff;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+  <div id="sky"></div>
+  <div id="grass"></div>
+
+  <div id="road">
+    <div class="line line1"></div>
+    <div class="line line2"></div>
+  </div>
+
+  <div id="hud">
+    🇮🇳 INDIAN CAR DRIVE<br>
+    🚗 Score:
+    <span id="score">0</span>
+  </div>
+
+  <div id="car"></div>
+
+  <button id="start">START GAME</button>
+
+  <div class="controls">
+    <button class="control" id="left">⬅️</button>
+    <button class="control" id="right">➡️</button>
+  </div>
+
+  <div id="gameOver">
+    <h1>GAME OVER</h1>
+    <p>Score: <span id="finalScore">0</span></p>
+    <button id="restart">RESTART</button>
+  </div>
+
+</div>
+
+<script>
+
+const car = document.getElementById("car");
+const game = document.getElementById("game");
+const scoreText = document.getElementById("score");
+
+let carX;
+let score = 0;
+let playing = false;
+let traffic = [];
+
+function startGame() {
+
+  playing = true;
+  score = 0;
+
+  document.getElementById("start").style.display = "none";
+
+  carX = window.innerWidth / 2 - 31;
+
+  car.style.left = carX + "px";
+
+  requestAnimationFrame(gameLoop);
+
+  setInterval(createTraffic, 1000);
+}
+
+function createTraffic() {
+
+  if (!playing) return;
+
+  const t = document.createElement("div");
+
+  t.className = "traffic";
+
+  const roadLeft = window.innerWidth * .18;
+  const roadWidth = window.innerWidth * .64;
+
+  const lanes = [
+    roadLeft + roadWidth * .17,
+    roadLeft + roadWidth * .50,
+    roadLeft + roadWidth * .83
+  ];
+
+  t.style.left =
+    lanes[Math.floor(Math.random() * lanes.length)] - 27 + "px";
+
+  t.style.top = "-120px";
+
+  game.appendChild(t);
+
+  traffic.push(t);
+}
+
+function gameLoop() {
+
+  if (!playing) return;
+
+  score++;
+
+  scoreText.textContent =
+    Math.floor(score / 10);
+
+  traffic.forEach((t, index) => {
+
+    let y = parseFloat(t.style.top);
+
+    y += 7;
+
+    t.style.top = y + "px";
+
+    if (y > window.innerHeight) {
+
+      t.remove();
+
+      traffic.splice(index, 1);
+    }
+
+    if (collision(car, t)) {
+
+      endGame();
+    }
+  });
+
+  requestAnimationFrame(gameLoop);
+}
+
+function collision(a, b) {
+
+  const A = a.getBoundingClientRect();
+  const B = b.getBoundingClientRect();
+
+  return !(
+    A.bottom < B.top ||
+    A.top > B.bottom ||
+    A.right < B.left ||
+    A.left > B.right
+  );
+}
+
+function moveLeft() {
+
+  if (!playing) return;
+
+  carX -= 35;
+
+  const min =
+    window.innerWidth * .18 + 10;
+
+  if (carX < min)
+    carX = min;
+
+  car.style.left = carX + "px";
+}
+
+function moveRight() {
+
+  if (!playing) return;
+
+  carX += 35;
+
+  const max =
+    window.innerWidth * .82 - 72;
+
+  if (carX > max)
+    carX = max;
+
+  car.style.left = carX + "px";
+}
+
+function endGame() {
+
+  playing = false;
+
+  document.getElementById("finalScore")
+    .textContent = Math.floor(score / 10);
+
+  document.getElementById("gameOver")
+    .style.display = "block";
+}
+
+document.getElementById("start")
+  .onclick = startGame;
+
+document.getElementById("restart")
+  .onclick = () => location.reload();
+
+document.getElementById("left")
+  .onclick = moveLeft;
+
+document.getElementById("right")
+  .onclick = moveRight;
+
+document.addEventListener("keydown", e => {
+
+  if (
+    e.key === "ArrowLeft" ||
+    e.key.toLowerCase() === "a"
+  ) {
+    moveLeft();
+  }
+
+  if (
+    e.key === "ArrowRight" ||
+    e.key.toLowerCase() === "d"
+  ) {
+    moveRight();
+  }
+
+});
+
+</script>
+
+</body>
+</html>

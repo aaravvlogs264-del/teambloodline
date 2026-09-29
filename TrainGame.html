@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Train Driver Game</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #111827;
+  font-family: Arial, sans-serif;
+  color: white;
+  text-align: center;
+}
+
+h1 {
+  margin: 15px 0;
+}
+
+#game {
+  width: 100%;
+  max-width: 900px;
+  height: 500px;
+  margin: auto;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(#5ec8ff 0%, #b9ecff 55%, #4caf50 55%);
+  border: 4px solid #222;
+}
+
+/* Sun */
+.sun {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  background: yellow;
+  border-radius: 50%;
+  top: 30px;
+  right: 60px;
+}
+
+/* Mountains */
+.mountain {
+  position: absolute;
+  bottom: 180px;
+  width: 0;
+  height: 0;
+  border-left: 120px solid transparent;
+  border-right: 120px solid transparent;
+  border-bottom: 150px solid #356b42;
+}
+
+.m1 { left: 30px; }
+.m2 { left: 350px; }
+.m3 { right: 20px; }
+
+/* Ground */
+.ground {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 180px;
+  background: #3f7d32;
+}
+
+/* Tracks */
+.track {
+  position: absolute;
+  bottom: 35px;
+  width: 100%;
+  height: 80px;
+  background: #60432e;
+}
+
+.rail {
+  position: absolute;
+  width: 100%;
+  height: 7px;
+  background: #ddd;
+}
+
+.rail1 { top: 15px; }
+.rail2 { bottom: 15px; }
+
+.sleepers {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 35px,
+    #292929 36px,
+    #292929 48px
+  );
+}
+
+/* Train */
+#train {
+  position: absolute;
+  bottom: 105px;
+  left: 50px;
+  display: flex;
+  align-items: flex-end;
+  transition: left 0.1s linear;
+}
+
+.engine {
+  width: 150px;
+  height: 100px;
+  background: #d71920;
+  border: 4px solid #111;
+  border-radius: 8px;
+  position: relative;
+}
+
+.coach {
+  width: 130px;
+  height: 90px;
+  background: #2563eb;
+  border: 4px solid #111;
+  border-radius: 8px;
+  margin-left: 5px;
+  position: relative;
+}
+
+.window {
+  width: 35px;
+  height: 30px;
+  background: #9eeaff;
+  border: 3px solid #111;
+  position: absolute;
+  top: 15px;
+}
+
+.w1 { left: 15px; }
+.w2 { left: 65px; }
+
+.w3 { left: 15px; }
+.w4 { left: 70px; }
+
+.wheel {
+  width: 32px;
+  height: 32px;
+  background: #111;
+  border: 5px solid #777;
+  border-radius: 50%;
+  position: absolute;
+  bottom: -22px;
+}
+
+.wh1 { left: 20px; }
+.wh2 { right: 20px; }
+
+.smoke {
+  position: absolute;
+  top: -55px;
+  left: 35px;
+  font-size: 35px;
+}
+
+/* Station */
+.station {
+  position: absolute;
+  right: 40px;
+  bottom: 125px;
+  background: white;
+  color: black;
+  padding: 10px;
+  border: 3px solid #222;
+  font-weight: bold;
+}
+
+/* Controls */
+.controls {
+  margin: 15px auto;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 14px 22px;
+  border: none;
+  border-radius: 10px;
+  background: #ef4444;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #b91c1c;
+}
+
+.info {
+  font-size: 18px;
+  margin: 10px;
+}
+
+#message {
+  font-weight: bold;
+  color: #facc15;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🚆 Train Driver Game</h1>
+
+<div id="game">
+
+  <div class="sun"></div>
+
+  <div class="mountain m1"></div>
+  <div class="mountain m2"></div>
+  <div class="mountain m3"></div>
+
+  <div class="ground"></div>
+
+  <div class="station">
+    🚉 STATION
+  </div>
+
+  <div class="track">
+    <div class="sleepers"></div>
+    <div class="rail rail1"></div>
+    <div class="rail rail2"></div>
+  </div>
+
+  <div id="train">
+
+    <div class="coach">
+      <div class="window w3"></div>
+      <div class="window w4"></div>
+      <div class="wheel wh1"></div>
+      <div class="wheel wh2"></div>
+    </div>
+
+    <div class="engine">
+      <div class="window w1"></div>
+      <div class="window w2"></div>
+      <div class="smoke">☁️</div>
+      <div class="wheel wh1"></div>
+      <div class="wheel wh2"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="info">
+  🚄 Speed: <span id="speed">0</span> km/h |
+  📏 Distance: <span id="distance">0</span> km |
+  ⭐ Score: <span id="score">0</span>
+</div>
+
+<div class="controls">
+  <button onclick="startTrain()">▶ START</button>
+  <button onclick="accelerate()">⚡ ACCELERATE</button>
+  <button onclick="brake()">🛑 BRAKE</button>
+  <button onclick="horn()">📯 HORN</button>
+  <button onclick="restart()">🔄 RESTART</button>
+</div>
+
+<p id="message">Press START to drive the train!</p>
+
+<script>
+
+let train = document.getElementById("train");
+
+let speed = 0;
+let distance = 0;
+let score = 0;
+let position = 50;
+let running = false;
+
+function startTrain() {
+  running = true;
+  document.getElementById("message").innerText =
+    "🚆 Train started!";
+}
+
+function accelerate() {
+  running = true;
+
+  speed += 15;
+
+  if (speed > 180) {
+    speed = 180;
+  }
+
+  update();
+}
+
+function brake() {
+
+  speed -= 25;
+
+  if (speed < 0) {
+    speed = 0;
+    running = false;
+  }
+
+  update();
+}
+
+function horn() {
+
+  document.getElementById("message").innerText =
+    "📯 TOOOOT! TOOOOT!";
+
+  score += 5;
+
+  update();
+}
+
+function restart() {
+
+  speed = 0;
+  distance = 0;
+  score = 0;
+  position = 50;
+  running = false;
+
+  document.getElementById("message").innerText =
+    "Press START to drive the train!";
+
+  update();
+}
+
+function update() {
+
+  document.getElementById("speed").innerText =
+    Math.round(speed);
+
+  document.getElementById("distance").innerText =
+    distance.toFixed(1);
+
+  document.getElementById("score").innerText =
+    Math.round(score);
+
+  train.style.left = position + "px";
+}
+
+function gameLoop() {
+
+  if (running) {
+
+    distance += speed / 3600;
+
+    score += speed / 1000;
+
+    position += speed / 100;
+
+    if (position > window.innerWidth - 250) {
+
+      position = 50;
+
+      score += 100;
+
+      document.getElementById("message").innerText =
+        "🎉 You reached the station! +100 points";
+    }
+
+    update();
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+document.addEventListener("keydown", function(event) {
+
+  if (event.key === "ArrowUp") {
+    accelerate();
+  }
+
+  if (event.key === "ArrowDown") {
+    brake();
+  }
+
+  if (event.code === "Space") {
+    horn();
+  }
+
+});
+
+update();
+gameLoop();
+
+</script>
+
+</body>
+</html>

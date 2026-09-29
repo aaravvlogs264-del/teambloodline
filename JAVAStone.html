@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e24;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background: #2a2d34;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #4f46e5;
+        }
+
+        .scoreboard {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            background: #11141a;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .score-box span {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+
+        /* Hand Shaking Display Area */
+        .display-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 150px;
+            margin-bottom: 30px;
+            background: #1a1c23;
+            border-radius: 10px;
+            padding: 0 40px;
+            position: relative;
+        }
+
+        .hand {
+            font-size: 5rem;
+            transition: transform 0.1s;
+        }
+
+        .player-hand {
+            transform: scaleX(-1); /* Face right */
+        }
+
+        .computer-hand {
+            /* Face left natively */
+        }
+
+        /* Shaking Animation Effect */
+        .shakePlayer {
+            animation: shakePlayerAnim 0.5s ease 3;
+        }
+
+        .shakeComputer {
+            animation: shakeComputerAnim 0.5s ease 3;
+        }
+
+        @keyframes shakePlayerAnim {
+            0%, 100% { transform: scaleX(-1) rotate(0deg); }
+            50% { transform: scaleX(-1) rotate(-25deg); }
+        }
+
+        @keyframes shakeComputerAnim {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-25deg); }
+        }
+
+        .result-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-height: 36px;
+            margin-bottom: 20px;
+            color: #10b981;
+        }
+
+        /* Controls / Buttons */
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: #4338ca;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn:disabled {
+            background: #4b5563;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Stone, Paper, Scissors</h1>
+
+        <div class="scoreboard">
+            <div class="score-box">
+                You
+                <span id="player-score">0</span>
+            </div>
+            <div class="score-box">
+                Cpu
+                <span id="computer-score">0</span>
+            </div>
+        </div>
+
+        <!-- Hand Display Setup -->
+        <div class="display-area">
+            <div id="p-hand" class="hand player-hand">✊</div>
+            <div id="c-hand" class="hand computer-hand">✊</div>
+        </div>
+
+        <div id="result" class="result-text">Choose your move!</div>
+
+        <div class="buttons-container">
+            <button class="btn" onclick="playGame('stone')">✊ Stone</button>
+            <button class="btn" onclick="playGame('paper')">✋ Paper</button>
+            <button class="btn" onclick="playGame('scissors')">✌ Scissors</button>
+        </div>
+    </div>
+
+    <script>
+        let pScore = 0;
+        let cScore = 0;
+
+        const playerHandUI = document.getElementById('p-hand');
+        const computerHandUI = document.getElementById('c-hand');
+        const resultUI = document.getElementById('result');
+        const playerScoreUI = document.getElementById('player-score');
+        const computerScoreUI = document.getElementById('computer-score');
+        const buttons = document.querySelectorAll('.btn');
+
+        // Mapping choices to corresponding hand emojis
+        const handEmoji = {
+            stone: '✊',
+            paper: '✋',
+            scissors: '✌'
+        };
+
+        function playGame(playerChoice) {
+            // Disable buttons during shake animation to prevent spamming
+            buttons.forEach(btn => btn.disabled = true);
+
+            // Reset hands to baseline fist icon for shaking sequence
+            playerHandUI.innerText = '✊';
+            computerHandUI.innerText = '✊';
+            resultUI.innerText = 'Evaluating...';
+
+            // Trigger CSS shaking animations
+            playerHandUI.classList.add('shakePlayer');
+            computerHandUI.classList.add('shakeComputer');
+
+            // Generate Computer pick ahead of time
+            const choices = ['stone', 'paper', 'scissors'];
+            const computerChoice = choices[Math.floor(Math.random() * 3)];
+
+            // Wait 1.5s for the shaking animation to finish before updating display
+            setTimeout(() => {
+                // Remove animation classes
+                playerHandUI.classList.remove('shakePlayer');
+                computerHandUI.classList.remove('shakeComputer');
+
+                // Render final choice shapes
+                playerHandUI.innerText = handEmoji[playerChoice];
+                computerHandUI.innerText = handEmoji[computerChoice];
+
+                // Determine Round Winner
+                evaluateWinner(playerChoice, computerChoice);
+
+                // Re-enable input buttons
+                buttons.forEach(btn => btn.disabled = false);
+            }, 1500);
+        }
+
+        function evaluateWinner(player, computer) {
+            if (player === computer) {
+                resultUI.innerText = "It's a Tie! 🤝";
+                resultUI.style.color = '#9ca3af';
+                return;
+            }
+
+            if (
+                (player === 'stone' && computer === 'scissors') ||
+                (player === 'paper' && computer === 'stone') ||
+                (player === 'scissors' && computer === 'paper')
+            ) {
+                resultUI.innerText = "You Win! 🎉";
+                resultUI.style.color = '#10b981';
+                pScore++;
+                playerScoreUI.innerText = pScore;
+            } else {
+                resultUI.innerText = "Computer Wins! 😢";
+                resultUI.style.color = '#ef4444';
+                cScore++;
+                computerScoreUI.innerText = cScore;
+            }
+        }
+    </script>
+</body>
+</html>

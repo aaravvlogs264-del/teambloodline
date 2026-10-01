@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Panel Activation</title>
+<style>
+body{
+  background:#111;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+  padding-top:100px;
+}
+input,button{
+  padding:12px;
+  margin:8px;
+  border-radius:6px;
+  border:0;
+}
+button{
+  background:red;
+  color:white;
+  cursor:pointer;
+}
+#timer{margin-top:15px;color:#00ff00;}
+</style>
+</head>
+
+<body>
+
+<h2>PANEL PASWORD</h2>
+
+<input id="uid" placeholder="PASWROD________">
+<br>
+<button onclick="activate()">Submit</button>
+
+<div id="timer"></div>
+
+<script>
+function activate(){
+  let id=document.getElementById("uid").value;
+
+  if(id==""){

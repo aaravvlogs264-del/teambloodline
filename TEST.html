@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Gaming Panel</title>
+<style>
+body{
+  margin:0;
+  background:#050505;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+}
+.panel{
+  width:280px;
+  margin:80px auto;
+  padding:20px;
+  background:#111;
+  border:2px solid red;
+  border-radius:12px;
+  box-shadow:0 0 20px red;
+}
+h1{color:red}
+input{
+  width:90%;
+  padding:10px;
+  margin:8px;
+  background:#222;
+  color:white;
+  border:1px solid red;
+  border-radius:6px;
+}
+button{
+  padding:10px 25px;
+  background:red;
+  color:white;
+  border:0;
+  border-radius:6px;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="panel">
+<h1>PANEL PASS 🔐</h1>
+
+<input id="uid" placeholder="Enter Player ID">
+
+<button onclick="show()">SUBMIT</button>
+
+<p id="msg"></p>
+</div>
+
+<script>
+function show(){
+ let id=document.getElementById("uid").value;
+ document.getElementById("msg").innerHTML=
+ id ? "ID: "+id+"<br>WRONG<input type="password" value="" />" : "Enter ID";
+}
+</script>
+
+</body>
+</html>
+<h1>ONLY FOR 1HOUR</h1>
